@@ -538,6 +538,127 @@ html, body {
 }
 .exercise-list-item .delete-btn:active { color: var(--red); background: rgba(239,68,68,0.1); }
 
+/* ============ DASHBOARD ============ */
+.dashboard { margin-bottom: 20px; }
+.dash-hero { display: flex; gap: 10px; margin-bottom: 12px; }
+.dash-stat {
+  flex: 1;
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  padding: 16px 14px;
+  text-align: center;
+}
+.dash-stat .big-num {
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--text);
+}
+.dash-stat .big-num .unit {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-left: 2px;
+}
+.dash-stat .stat-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.dash-stat.streak { border-left: 3px solid var(--orange); }
+.dash-stat.total { border-left: 3px solid var(--teal); }
+.dash-section {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 12px;
+}
+.dash-section-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+}
+.dash-last-workout .lw-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.dash-last-workout .lw-date {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+.dash-last-workout .lw-count {
+  font-size: 12px;
+  color: var(--text-dim);
+  background: var(--card-nested);
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+.dash-last-workout .lw-exercise {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  font-size: 14px;
+}
+.dash-last-workout .lw-exercise:last-child { border-bottom: none; }
+.dash-last-workout .lw-name { color: var(--text); }
+.dash-last-workout .lw-detail { color: var(--text-muted); font-variant-numeric: tabular-nums; }
+.pr-grid { display: flex; flex-direction: column; gap: 8px; }
+.pr-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--card-nested);
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+.pr-card .pr-name { font-size: 14px; font-weight: 500; color: var(--text); }
+.pr-card .pr-val { font-size: 18px; font-weight: 700; color: var(--green); }
+.pr-card .pr-gain { font-size: 11px; color: var(--green); margin-top: 1px; }
+.pr-card .pr-right { text-align: right; }
+.heatmap-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.heatmap {
+  display: grid;
+  grid-template-rows: repeat(7, 14px);
+  grid-auto-flow: column;
+  grid-auto-columns: 14px;
+  gap: 3px;
+}
+.heatmap-cell {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  background: var(--card-nested);
+}
+.heatmap-cell.lvl-4 { background: var(--teal); }
+.dash-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.dash-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--card-border);
+}
+
 /* ============ ENTRY CARDS (New Workout) ============ */
 .entry-card {
   background: var(--card);
@@ -680,6 +801,8 @@ select.input-field option { background: var(--card); color: var(--text); }
 
     <!-- ===== SCREEN 1: NEW WORKOUT ===== -->
     <div class="screen active" id="screen-workout">
+      <div class="dashboard" id="dashboard"></div>
+      <div class="dash-divider">Log Workout</div>
       <div id="workoutEntries"></div>
       <div style="display:flex;gap:10px;margin-bottom:12px;">
         <button class="btn btn-secondary" style="flex:1" onclick="openExercisePicker('single')">
@@ -985,7 +1108,7 @@ function switchTab(tab) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.querySelector(`.tab-btn[data-tab="${tab}"]`).classList.add('active');
 
-  const titles = { workout:'New Workout', calendar:'Calendar', progress:'Progress', exercises:'Exercises' };
+  const titles = { workout:'Dashboard', calendar:'Calendar', progress:'Progress', exercises:'Exercises' };
   document.getElementById('headerTitle').textContent = titles[tab];
 
   if (tab === 'workout') {
@@ -1324,6 +1447,7 @@ function saveWorkout() {
   saveWorkouts(data.workouts);
   currentEntries = [];
   renderWorkoutEntries();
+  renderDashboard();
   showToast('Workout saved!');
 }
 
@@ -1715,8 +1839,123 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js').catch(() => {});
 }
 
+// ============ DASHBOARD ============
+function renderDashboard() {
+  const w = data.workouts;
+  const el = document.getElementById('dashboard');
+  if (!w.length) { el.innerHTML = ''; return; }
+
+  // --- STREAK (consecutive weeks from most recent workout backwards) ---
+  let streakWeeks = 0;
+  const lastWorkoutDate = new Date(w[0].date + 'T12:00:00');
+  let checkDate = new Date(lastWorkoutDate);
+  checkDate.setDate(checkDate.getDate() - checkDate.getDay());
+  while (true) {
+    const ws = new Date(checkDate);
+    const we = new Date(checkDate); we.setDate(we.getDate() + 6);
+    const wsStr = ws.toISOString().slice(0,10);
+    const weStr = we.toISOString().slice(0,10);
+    if (w.some(x => x.date >= wsStr && x.date <= weStr)) {
+      streakWeeks++;
+      checkDate.setDate(checkDate.getDate() - 7);
+    } else break;
+    if (streakWeeks > 200) break;
+  }
+
+  // --- LAST WORKOUT ---
+  const last = w[0];
+  const lastDate = formatDateLong(last.date);
+  let lastHtml = '';
+  last.entries.forEach(e => {
+    if (e.type === 'superset') {
+      e.exercises.forEach(ex => {
+        const d = (ex.weight === 'BW' ? 'BW' : ex.weight === null ? '' : ex.weight + ' lbs') +
+          (ex.sets ? ' \u00d7 ' + ex.sets.join(', ') : '');
+        lastHtml += `<div class="lw-exercise"><span class="lw-name">${ex.exercise}</span><span class="lw-detail">${d}</span></div>`;
+      });
+    } else {
+      const d = (e.weight === 'BW' ? 'BW' : e.weight === null ? '' : e.weight + ' lbs') +
+        (e.sets ? ' \u00d7 ' + e.sets.join(', ') : '');
+      lastHtml += `<div class="lw-exercise"><span class="lw-name">${e.exercise}</span><span class="lw-detail">${d}</span></div>`;
+    }
+  });
+
+  // --- PERSONAL RECORDS ---
+  const exMap = {};
+  w.forEach(wo => {
+    wo.entries.forEach(e => {
+      const items = e.type === 'superset' ? e.exercises : [e];
+      items.forEach(ex => {
+        if (!exMap[ex.exercise]) exMap[ex.exercise] = { max: 0, first: 0, sessions: 0 };
+        exMap[ex.exercise].sessions++;
+        const wt = typeof ex.weight === 'number' ? ex.weight : 0;
+        if (wt > exMap[ex.exercise].max) exMap[ex.exercise].max = wt;
+      });
+    });
+  });
+  const sortedByDate = [...w].sort((a,b) => a.date.localeCompare(b.date));
+  const firstSeen = {};
+  sortedByDate.forEach(wo => {
+    wo.entries.forEach(e => {
+      const items = e.type === 'superset' ? e.exercises : [e];
+      items.forEach(ex => {
+        if (!firstSeen[ex.exercise] && typeof ex.weight === 'number') firstSeen[ex.exercise] = ex.weight;
+      });
+    });
+  });
+  const prs = Object.entries(exMap)
+    .filter(([n, d]) => d.max > 0 && firstSeen[n] && d.sessions >= 2)
+    .map(([n, d]) => ({ name:n, max:d.max, gain:d.max - (firstSeen[n]||d.max) }))
+    .sort((a,b) => b.max - a.max).slice(0, 4);
+  let prHtml = '';
+  prs.forEach(p => {
+    const g = p.gain > 0 ? `<div class="pr-gain">+${p.gain} lbs since start</div>` : '';
+    prHtml += `<div class="pr-card"><span class="pr-name">${p.name}</span><div class="pr-right"><span class="pr-val">${p.max} lbs</span>${g}</div></div>`;
+  });
+
+  // --- HEATMAP (last 6 months) ---
+  const workoutDates = new Set(w.map(x => x.date));
+  const today = new Date();
+  const hmStart = new Date(today); hmStart.setMonth(hmStart.getMonth() - 6);
+  hmStart.setDate(hmStart.getDate() - hmStart.getDay());
+  let hmCells = '';
+  const hd = new Date(hmStart);
+  while (hd <= today) {
+    const ds = hd.getFullYear()+'-'+String(hd.getMonth()+1).padStart(2,'0')+'-'+String(hd.getDate()).padStart(2,'0');
+    hmCells += `<div class="heatmap-cell ${workoutDates.has(ds)?'lvl-4':''}"></div>`;
+    hd.setDate(hd.getDate() + 1);
+  }
+
+  el.innerHTML = `
+    <div class="dash-hero">
+      <div class="dash-stat streak">
+        <div class="big-num">${streakWeeks}<span class="unit">wk</span></div>
+        <div class="stat-label">Streak</div>
+      </div>
+      <div class="dash-stat total">
+        <div class="big-num">${w.length}</div>
+        <div class="stat-label">Workouts</div>
+      </div>
+    </div>
+    <div class="dash-section dash-last-workout">
+      <div class="dash-section-title">Last Workout</div>
+      <div class="lw-header">
+        <span class="lw-date">${lastDate}</span>
+        <span class="lw-count">${last.entries.length} exercises</span>
+      </div>
+      ${lastHtml}
+    </div>
+    ${prHtml ? `<div class="dash-section"><div class="dash-section-title">Personal Records</div><div class="pr-grid">${prHtml}</div></div>` : ''}
+    <div class="dash-section">
+      <div class="dash-section-title">Activity — Last 6 Months</div>
+      <div class="heatmap-wrap"><div class="heatmap">${hmCells}</div></div>
+    </div>
+  `;
+}
+
 // ============ INIT ============
 initCalendar();
+renderDashboard();
 switchTab('workout');
 </script>
 </body>
