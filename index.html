@@ -659,6 +659,175 @@ html, body {
   background: var(--card-border);
 }
 
+/* ============ WORKOUT TAB — PLANNING VIEW ============ */
+.wo-phase { display: none; }
+.wo-phase.active { display: block; }
+
+/* Previous Workout Browser */
+.prev-workouts-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.prev-workouts-header .section-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.prev-nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.prev-nav button {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  color: var(--text);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.prev-nav button:active { background: var(--card-hover); }
+.prev-nav button:disabled { opacity: 0.3; cursor: default; }
+.prev-nav .page-indicator {
+  font-size: 12px;
+  color: var(--text-dim);
+  min-width: 40px;
+  text-align: center;
+}
+.prev-workout-card {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 12px;
+}
+.prev-workout-card .pw-date {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.prev-workout-card .pw-ago {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-bottom: 12px;
+}
+.prev-workout-card .pw-exercise {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.prev-workout-card .pw-exercise:last-child { border-bottom: none; }
+.prev-workout-card .pw-name { font-size: 14px; color: var(--text); font-weight: 500; }
+.prev-workout-card .pw-detail { font-size: 13px; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+.prev-workout-card .pw-comment { font-size: 12px; color: var(--text-dim); font-style: italic; padding: 4px 0 0; }
+.pw-use-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  margin-top: 12px;
+  padding: 10px;
+  background: rgba(20,184,166,0.08);
+  border: 1px solid rgba(20,184,166,0.2);
+  border-radius: 10px;
+  color: var(--teal);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.pw-use-btn:active { background: rgba(20,184,166,0.15); }
+
+/* Staging Area */
+.staging-section {
+  margin-top: 20px;
+}
+.staging-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.staging-header .section-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.staging-exercise {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  margin-bottom: 8px;
+}
+.staging-exercise .se-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.staging-exercise .se-name {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text);
+}
+.staging-exercise .se-ref {
+  font-size: 12px;
+  color: var(--text-dim);
+}
+.staging-exercise .se-remove {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 20px;
+  cursor: pointer;
+  padding: 4px 8px;
+  line-height: 1;
+}
+.staging-exercise .se-remove:active { color: var(--red); }
+.staging-exercise.superset-staged {
+  border-left: 3px solid var(--pink);
+}
+
+/* Active Workout */
+.active-workout-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.active-workout-header h2 {
+  font-size: 18px;
+  font-weight: 700;
+}
+.active-workout-header .back-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 8px;
+}
+.active-workout-header .back-btn:active { background: var(--card); }
+
 /* ============ ENTRY CARDS (New Workout) ============ */
 .entry-card {
   background: var(--card);
@@ -799,28 +968,64 @@ select.input-field option { background: var(--card); color: var(--text); }
   <!-- Screen Container -->
   <div class="screen-container" id="screenContainer">
 
-    <!-- ===== SCREEN 1: NEW WORKOUT ===== -->
-    <div class="screen active" id="screen-workout">
+    <!-- ===== SCREEN 1: DASHBOARD ===== -->
+    <div class="screen active" id="screen-dashboard">
       <div class="dashboard" id="dashboard"></div>
-      <div class="dash-divider">Log Workout</div>
-      <div id="workoutEntries"></div>
-      <div style="display:flex;gap:10px;margin-bottom:12px;">
-        <button class="btn btn-secondary" style="flex:1" onclick="openExercisePicker('single')">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          Add Exercise
-        </button>
-        <button class="btn btn-secondary" style="flex:1" onclick="openExercisePicker('superset')">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          <span class="superset-badge" style="font-size:10px;padding:2px 6px;">SS</span>
-        </button>
+    </div>
+
+    <!-- ===== SCREEN 2: WORKOUT ===== -->
+    <div class="screen" id="screen-workout">
+
+      <!-- PHASE 1: Planning (browse previous + stage today's) -->
+      <div class="wo-phase active" id="wo-planning">
+        <div class="prev-workouts-header">
+          <span class="section-label">Previous Workouts</span>
+          <div class="prev-nav">
+            <button id="prevNavBack" onclick="prevWorkoutNav(-1)">&#8249;</button>
+            <span class="page-indicator" id="prevPageIndicator">1/4</span>
+            <button id="prevNavFwd" onclick="prevWorkoutNav(1)">&#8250;</button>
+          </div>
+        </div>
+        <div id="prevWorkoutDisplay"></div>
+
+        <div class="staging-section">
+          <div class="staging-header">
+            <span class="section-label">Today's Workout</span>
+            <span class="text-dim text-sm" id="stagingCount"></span>
+          </div>
+          <div id="stagingList"></div>
+          <div style="display:flex;gap:10px;margin-bottom:12px;">
+            <button class="btn btn-secondary" style="flex:1" onclick="openExercisePicker('single')">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Add Exercise
+            </button>
+            <button class="btn btn-secondary" style="flex:1" onclick="openExercisePicker('superset')">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              <span class="superset-badge" style="font-size:10px;padding:2px 6px;">SS</span>
+            </button>
+          </div>
+          <button class="btn btn-primary mt-8" id="createWorkoutBtn" onclick="startActiveWorkout()" style="display:none;">
+            Create Workout
+          </button>
+          <div class="empty-state" id="stagingEmpty">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6.5 6.5h11M4 12h16M6.5 17.5h11"/><circle cx="3" cy="6.5" r="1.5"/><circle cx="21" cy="6.5" r="1.5"/><circle cx="2" cy="12" r="2"/><circle cx="22" cy="12" r="2"/><circle cx="3" cy="17.5" r="1.5"/><circle cx="21" cy="17.5" r="1.5"/></svg>
+            <h3>Plan your workout</h3>
+            <p>Browse previous workouts above or tap "Add Exercise" to build today's session</p>
+          </div>
+        </div>
       </div>
-      <button class="btn btn-primary mt-8" id="saveWorkoutBtn" onclick="saveWorkout()" style="display:none;">
-        Save Workout
-      </button>
-      <div class="empty-state" id="workoutEmpty">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6.5 6.5h11M4 12h16M6.5 17.5h11"/><circle cx="3" cy="6.5" r="1.5"/><circle cx="21" cy="6.5" r="1.5"/><circle cx="2" cy="12" r="2"/><circle cx="22" cy="12" r="2"/><circle cx="3" cy="17.5" r="1.5"/><circle cx="21" cy="17.5" r="1.5"/></svg>
-        <h3>No exercises yet</h3>
-        <p>Tap "Add Exercise" to start your workout</p>
+
+      <!-- PHASE 2: Active Workout (input mode) -->
+      <div class="wo-phase" id="wo-active">
+        <div class="active-workout-header">
+          <button class="back-btn" onclick="backToPlanning()">&#8249; Back</button>
+          <h2>Active Workout</h2>
+          <div style="width:60px;"></div>
+        </div>
+        <div id="workoutEntries"></div>
+        <button class="btn btn-primary mt-16" id="submitWorkoutBtn" onclick="saveWorkout()">
+          Submit Workout
+        </button>
       </div>
     </div>
 
@@ -859,7 +1064,11 @@ select.input-field option { background: var(--card); color: var(--text); }
 
   <!-- Bottom Tab Bar -->
   <div class="tab-bar">
-    <button class="tab-btn active" data-tab="workout" onclick="switchTab('workout')">
+    <button class="tab-btn active" data-tab="dashboard" onclick="switchTab('dashboard')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/></svg>
+      <span>Home</span>
+    </button>
+    <button class="tab-btn" data-tab="workout" onclick="switchTab('workout')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6.5 6.5h11M4 12h16M6.5 17.5h11"/><circle cx="3" cy="6.5" r="1.5"/><circle cx="21" cy="6.5" r="1.5"/><circle cx="2" cy="12" r="2"/><circle cx="22" cy="12" r="2"/><circle cx="3" cy="17.5" r="1.5"/><circle cx="21" cy="17.5" r="1.5"/></svg>
       <span>Workout</span>
     </button>
@@ -1100,7 +1309,7 @@ function formatSetsShort(sets) {
 }
 
 // ============ TAB NAVIGATION ============
-let currentTab = 'workout';
+let currentTab = 'dashboard';
 function switchTab(tab) {
   currentTab = tab;
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -1108,22 +1317,199 @@ function switchTab(tab) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.querySelector(`.tab-btn[data-tab="${tab}"]`).classList.add('active');
 
-  const titles = { workout:'Dashboard', calendar:'Calendar', progress:'Progress', exercises:'Exercises' };
+  const titles = { dashboard:'Dashboard', workout:'Workout', calendar:'Calendar', progress:'Progress', exercises:'Exercises' };
   document.getElementById('headerTitle').textContent = titles[tab];
 
-  if (tab === 'workout') {
+  if (tab === 'dashboard') {
     document.getElementById('headerSubtitle').textContent = formatDateLong(todayStr());
   } else {
     document.getElementById('headerSubtitle').textContent = '';
   }
 
+  if (tab === 'dashboard') renderDashboard();
+  if (tab === 'workout') { renderPrevWorkout(); renderStaging(); }
   if (tab === 'calendar') renderCalendar();
   if (tab === 'progress') populateProgressSelect();
   if (tab === 'exercises') renderExerciseList();
 }
 
-// ============ SCREEN 1: NEW WORKOUT ============
-let currentEntries = []; // entries being built for current workout
+// ============ PREVIOUS WORKOUT BROWSER ============
+let prevWorkoutIdx = 0; // index into sorted workouts
+
+function getSortedWorkouts() {
+  return [...data.workouts].sort((a,b) => b.date.localeCompare(a.date));
+}
+
+function prevWorkoutNav(dir) {
+  const sorted = getSortedWorkouts();
+  prevWorkoutIdx = Math.max(0, Math.min(sorted.length - 1, prevWorkoutIdx + dir));
+  renderPrevWorkout();
+}
+
+function daysAgo(dateStr) {
+  const d = new Date(dateStr + 'T12:00:00');
+  const now = new Date();
+  now.setHours(12,0,0,0);
+  const diff = Math.round((now - d) / (1000*60*60*24));
+  if (diff === 0) return 'Today';
+  if (diff === 1) return '1 day ago';
+  return diff + ' days ago';
+}
+
+function renderPrevWorkout() {
+  const sorted = getSortedWorkouts();
+  const container = document.getElementById('prevWorkoutDisplay');
+  const indicator = document.getElementById('prevPageIndicator');
+  const backBtn = document.getElementById('prevNavBack');
+  const fwdBtn = document.getElementById('prevNavFwd');
+
+  if (sorted.length === 0) {
+    container.innerHTML = '<div class="empty-state" style="padding:24px 0;"><p>No previous workouts yet</p></div>';
+    indicator.textContent = '0/0';
+    backBtn.disabled = true;
+    fwdBtn.disabled = true;
+    return;
+  }
+
+  if (prevWorkoutIdx >= sorted.length) prevWorkoutIdx = sorted.length - 1;
+  const w = sorted[prevWorkoutIdx];
+  indicator.textContent = (prevWorkoutIdx + 1) + '/' + sorted.length;
+  backBtn.disabled = prevWorkoutIdx === 0;
+  fwdBtn.disabled = prevWorkoutIdx >= sorted.length - 1;
+
+  let exHtml = '';
+  w.entries.forEach(e => {
+    if (e.type === 'superset') {
+      e.exercises.forEach((ex, i) => {
+        const d = (ex.weight === 'BW' ? 'BW' : ex.weight === null ? '' : ex.weight + ' lbs') +
+          (ex.sets ? ' \u00d7 ' + ex.sets.join(', ') : '');
+        const prefix = i === 0 ? '<span class="superset-badge" style="font-size:9px;padding:1px 5px;margin-right:6px;">SS</span>' : '<span style="display:inline-block;width:28px;"></span>';
+        exHtml += `<div class="pw-exercise"><span class="pw-name">${prefix}${ex.exercise}</span><span class="pw-detail">${d}</span></div>`;
+      });
+      if (e.comments) exHtml += `<div class="pw-comment">"${e.comments}"</div>`;
+    } else {
+      const d = (e.weight === 'BW' ? 'BW' : e.weight === null ? '' : e.weight + ' lbs') +
+        (e.sets ? ' \u00d7 ' + e.sets.join(', ') : '');
+      exHtml += `<div class="pw-exercise"><span class="pw-name">${e.exercise}</span><span class="pw-detail">${d}</span></div>`;
+      if (e.comments) exHtml += `<div class="pw-comment">"${e.comments}"</div>`;
+    }
+  });
+
+  container.innerHTML = `<div class="prev-workout-card">
+    <div class="pw-date">${formatDate(w.date)}</div>
+    <div class="pw-ago">${daysAgo(w.date)} &middot; ${w.entries.length} exercise${w.entries.length!==1?'s':''}</div>
+    ${exHtml}
+    <button class="pw-use-btn" onclick="useWorkoutAsTemplate(${prevWorkoutIdx})">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>
+      Use as Template
+    </button>
+  </div>`;
+}
+
+// ============ STAGING AREA ============
+let stagedEntries = []; // entries staged for today's workout (lightweight: just exercise names + type)
+
+function useWorkoutAsTemplate(idx) {
+  const sorted = getSortedWorkouts();
+  const w = sorted[idx];
+  stagedEntries = [];
+  w.entries.forEach(e => {
+    if (e.type === 'superset') {
+      stagedEntries.push({ type:'superset', exercises: e.exercises.map(ex => ({ exercise: ex.exercise })) });
+    } else {
+      stagedEntries.push({ type:'single', exercise: e.exercise });
+    }
+  });
+  renderStaging();
+  showToast('Template loaded — edit as needed');
+}
+
+function removeStagedEntry(idx) {
+  stagedEntries.splice(idx, 1);
+  renderStaging();
+}
+
+function renderStaging() {
+  const container = document.getElementById('stagingList');
+  const createBtn = document.getElementById('createWorkoutBtn');
+  const emptyState = document.getElementById('stagingEmpty');
+  const countEl = document.getElementById('stagingCount');
+
+  if (stagedEntries.length === 0) {
+    container.innerHTML = '';
+    createBtn.style.display = 'none';
+    emptyState.style.display = 'block';
+    countEl.textContent = '';
+    return;
+  }
+
+  emptyState.style.display = 'none';
+  createBtn.style.display = 'flex';
+  countEl.textContent = stagedEntries.length + ' exercise' + (stagedEntries.length !== 1 ? 's' : '');
+
+  let html = '';
+  stagedEntries.forEach((entry, idx) => {
+    if (entry.type === 'superset') {
+      const names = entry.exercises.map(e => e.exercise).join(' + ');
+      const refs = entry.exercises.map(e => {
+        const last = getLastSession(e.exercise);
+        return last ? `${formatWeight(last.weight)}${formatWeightUnit(last.weight)} \u00d7 ${formatSetsShort(last.sets)}` : 'No history';
+      }).join(' / ');
+      html += `<div class="staging-exercise superset-staged">
+        <div class="se-info">
+          <span class="se-name"><span class="superset-badge" style="font-size:9px;padding:1px 5px;margin-right:4px;">SS</span>${names}</span>
+          <span class="se-ref">${refs}</span>
+        </div>
+        <button class="se-remove" onclick="removeStagedEntry(${idx})">&times;</button>
+      </div>`;
+    } else {
+      const last = getLastSession(entry.exercise);
+      const ref = last ? `Last: ${formatWeight(last.weight)}${formatWeightUnit(last.weight)} \u00d7 ${formatSetsShort(last.sets)}` : 'No history';
+      html += `<div class="staging-exercise">
+        <div class="se-info">
+          <span class="se-name">${entry.exercise}</span>
+          <span class="se-ref">${ref}</span>
+        </div>
+        <button class="se-remove" onclick="removeStagedEntry(${idx})">&times;</button>
+      </div>`;
+    }
+  });
+  container.innerHTML = html;
+}
+
+// ============ ACTIVE WORKOUT FLOW ============
+function startActiveWorkout() {
+  if (stagedEntries.length === 0) return;
+
+  // Convert staged entries to full currentEntries with input fields
+  currentEntries = stagedEntries.map(se => {
+    if (se.type === 'superset') {
+      return {
+        type: 'superset',
+        exercises: se.exercises.map(e => ({ exercise: e.exercise, weight: '', sets: [''] })),
+        comments: ''
+      };
+    } else {
+      return { type: 'single', exercise: se.exercise, weight: '', sets: [''], comments: '' };
+    }
+  });
+
+  // Switch to active phase
+  document.getElementById('wo-planning').classList.remove('active');
+  document.getElementById('wo-active').classList.add('active');
+  renderWorkoutEntries();
+}
+
+function backToPlanning() {
+  showConfirm('Go Back?', 'Your workout inputs will be lost. Are you sure?', () => {
+    document.getElementById('wo-active').classList.remove('active');
+    document.getElementById('wo-planning').classList.add('active');
+    currentEntries = [];
+  });
+}
+
+// ============ WORKOUT INPUT (active phase) ============
+let currentEntries = []; // entries being filled in active workout
 let pickerMode = 'single'; // 'single' or 'superset'
 let supersetSelections = []; // for superset mode
 
@@ -1199,26 +1585,21 @@ function pickExercise(name) {
       footer.innerHTML = `<button class="btn btn-secondary" onclick="closeExercisePicker()">Cancel</button>`;
     }
   } else {
-    // Single exercise
-    addEntryToWorkout({ type:'single', exercise:name, weight:'', sets:[''], comments:'' });
+    // Single exercise — add to staging
+    stagedEntries.push({ type: 'single', exercise: name });
+    renderStaging();
     closeExercisePicker();
   }
 }
 
 function finishSuperset() {
-  const ssExercises = supersetSelections.map(name => ({
-    exercise: name, weight: '', sets: ['']
-  }));
-  addEntryToWorkout({ type:'superset', exercises: ssExercises, comments:'' });
+  const ssExercises = supersetSelections.map(name => ({ exercise: name }));
+  stagedEntries.push({ type: 'superset', exercises: ssExercises });
+  renderStaging();
   closeExercisePicker();
   // Reset footer
   document.querySelector('#exercisePickerModal .modal-footer').innerHTML =
     `<button class="btn btn-secondary" onclick="closeExercisePicker()">Cancel</button>`;
-}
-
-function addEntryToWorkout(entry) {
-  currentEntries.push(entry);
-  renderWorkoutEntries();
 }
 
 function removeEntry(idx) {
@@ -1237,17 +1618,6 @@ function addSetToEntry(entryIdx, subIdx) {
 
 function renderWorkoutEntries() {
   const container = document.getElementById('workoutEntries');
-  const saveBtn = document.getElementById('saveWorkoutBtn');
-  const emptyState = document.getElementById('workoutEmpty');
-
-  if (currentEntries.length === 0) {
-    container.innerHTML = '';
-    saveBtn.style.display = 'none';
-    emptyState.style.display = 'block';
-    return;
-  }
-  emptyState.style.display = 'none';
-  saveBtn.style.display = 'flex';
 
   let html = '';
   currentEntries.forEach((entry, eIdx) => {
@@ -1446,7 +1816,13 @@ function saveWorkout() {
   }
   saveWorkouts(data.workouts);
   currentEntries = [];
-  renderWorkoutEntries();
+  stagedEntries = [];
+
+  // Return to planning view
+  document.getElementById('wo-active').classList.remove('active');
+  document.getElementById('wo-planning').classList.add('active');
+  renderStaging();
+  renderPrevWorkout();
   renderDashboard();
   showToast('Workout saved!');
 }
@@ -1956,7 +2332,7 @@ function renderDashboard() {
 // ============ INIT ============
 initCalendar();
 renderDashboard();
-switchTab('workout');
+switchTab('dashboard');
 </script>
 </body>
 </html>
